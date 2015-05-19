@@ -51,3 +51,7 @@ html {
   padding: 0 !important;
   background: none !important;
 }
+
+.shadow {
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.15);
+}
