@@ -1,0 +1,230 @@
+ <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="Thomas Lottermann">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>NotaQL cross-system data transformation language</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="theme.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="bootstrap/docs/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="bootstrap/docs/assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/default.min.css">
+  </head>
+
+  <body role="document">
+
+<a href="https://github.com/notaql/notaql"><img style="position: fixed; top: 50px; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+
+    <!-- Fixed navbar -->
+    <nav id="navbar" class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand logo" href="#"><img src="img/notaql.png"></a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#community">Community</a></li>
+            <li><a href="#about">About</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div id="main" class="container theme-showcase" role="main">
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <h1><strong>NotaQL</strong>'s Not a Query Language</h1>
+        <p>It's a cross-system data transformation language that allows to perform concise transformations between lots of different systems.</p>
+        <p><img src="img/overview.svg" class="img-responsive center-block" alt="NotaQL overview"><p>
+        <div class="pull-right">
+          <a href="https://groups.google.com/d/forum/notaql"><button type="button" class="btn btn-lg btn-default">View mailing list</button></a>
+          <a href="https://github.com/notaql/notaql"><button type="button" class="btn btn-lg btn-primary">View on GitHub</button></a>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+
+
+      <div class="page-header" id="examples">
+        <h1>Examples</h1>
+      </div>
+
+      <h2>Page Impressions Counter</h2>
+      <p>
+      In real systems it is often necessary to extract hot data from your main database into a faster one.
+      This is where key-value stores have their main benefits when compared to stores with more complex data models.
+      </p>
+      <p>
+      If for example our product catalog is stored in HBase, we might want to track page impressions in Redis.
+      At some point however you want to transfer the current state of the page impression counter back to HBase.
+      The reason for that could be that this grants us to only have one database hit instead of two when loading a product page.
+      </p>
+      <div class="row">
+        <div class="col-md-6">
+          <h3>Redis Input</h3>
+          <table class="table table-condensed">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>plate</td>
+                <td>1100</td>
+              </tr>
+              <tr>
+                <td>table</td>
+                <td>25000</td>
+              </tr>
+            </tbody>
+          </table>
+          <h3>NotaQL Transformation</h3>
+<pre><code>OUT._id <- IN._k,
+OUT.info.company <- IN._v</code></pre>
+        </div>
+        <div class="col-md-6">
+          <h3>MongoDB Output</h3>
+<pre><code class="json">{
+  "_id": "plate",
+  "price": 4,
+  "info": {
+    "company": "WFM",
+    "views": 1100
+  }
+}
+{
+  "_id": "table",
+  "price": 480,
+  "info": {
+    "company": "Eikia",
+    "views": 25000
+  }
+}</code></pre>
+        </div>
+      </div>
+
+      <h2>Aggregation</h2>
+      <p>
+Other tasks may include aggregating data. For example we might be interested in the average number of views of products of the companies.
+Let's say the result shall be stored in HBase.
+      </p>
+      <div class="row">
+        <div class="col-md-6">
+          <h3>MongoDB Input</h3>
+<pre><code class="json">{
+  "_id": "plate",
+  "price": 4,
+  "info": {
+    "company": "WFM",
+    "views": 1100
+  }
+}
+{
+  "_id": "knife",
+  "price": 20,
+  "info": {
+    "company": "Eikia",
+    "views": 15000
+  }
+}
+{
+  "_id": "table",
+  "price": 480,
+  "info": {
+    "company": "Eikia",
+    "views": 25000
+  }
+}</code></pre>
+        </div>
+        <div class="col-md-6">
+          <h3>HBase Output</h3>
+          <table class="table table-condensed">
+            <thead>
+              <tr>
+                <th>Row</th>
+                <th>avg_views</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>WFM</td>
+                <td>1100</td>
+              </tr>
+              <tr>
+                <td>Eikia</td>
+                <td>20000</td>
+              </tr>
+            </tbody>
+          </table>
+          <h3>NotaQL Transformation</h3>
+<pre><code>OUT._r <- IN.info.company,
+OUT.avg_views <- AVG(IN.info.views)</code></pre>
+        </div>
+      </div>
+
+      <div class="page-header" id="community">
+        <h1>Community</h1>
+      </div>
+
+      <p>Please use our IRC or mailing list for getting in touch on development and support.</p>
+
+      <ul>
+        <li>#notaql on irc.freenode.net</li>
+        <li><a href="https://groups.google.com/d/forum/notaql">notaql@googlegroups.com</a></li>
+      </ul>
+
+      <div class="page-header" id="about">
+        <h1>About</h1>
+      </div>
+
+      <p>
+        This project is a research prototype created at the
+        <a href="http://wwwlgis.informatik.uni-kl.de/cms/his/">Heterogeneous Information Systems Group</a> at the Technical University of Kaiserslautern.
+        The framework was written by Thomas Lottermann during his work for his master's thesis with Johannes Schildgen being his supervisor.
+        We open sourced it in order to allow new contributors to add new features, bug fixes, or simply use it for their own purposes.
+      </p>
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bootstrap/docs/assets/js/docs.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="bootstrap/docs/assets/js/ie10-viewport-bug-workaround.js"></script>
+    <!-- add highligh js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>

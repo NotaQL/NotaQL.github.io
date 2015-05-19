@@ -1,0 +1,35 @@
+body {
+  padding-top: 70px;
+  padding-bottom: 30px;
+}
+
+.theme-dropdown .dropdown-menu {
+  position: static;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.theme-showcase > p > .btn {
+  margin: 5px 0;
+}
+
+.theme-showcase .navbar .container {
+  width: auto;
+}
+
+.logo {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.carousel-indicators li {
+  background-color: #333333;
+}
+.carousel-indicators .active {
+  background-color: #000000;
+}
+
+.hljs {
+  padding: 0 !important;
+  background: none !important;
+}
